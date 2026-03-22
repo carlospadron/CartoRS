@@ -1,0 +1,38 @@
+# CartoRS Configuration
+# A headless GIS engine - configure your spatial services here.
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+
+services:
+  wms:
+    enabled: true
+    title: "CartoRS WMS"
+  wfs:
+    enabled: true
+    title: "CartoRS WFS"
+
+# Define your data sources
+datasources:
+  - name: "sample"
+    type: "geopackage"
+    path: "/data/sample.gpkg"
+
+# Define layers that map to tables in your data sources
+layers:
+  - name: "countries"
+    title: "World Countries"
+    datasource: "sample"
+    table: "countries"
+    srs: "EPSG:4326"
+    geometry_column: "geom"
+    bbox: [-180.0, -90.0, 180.0, 90.0]
+
+  - name: "cities"
+    title: "Major Cities"
+    datasource: "sample"
+    table: "cities"
+    srs: "EPSG:4326"
+    geometry_column: "geom"
+    bbox: [-180.0, -90.0, 180.0, 90.0]
