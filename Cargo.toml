@@ -1,0 +1,24 @@
+[package]
+name = "cartors"
+version = "0.1.0"
+edition = "2021"
+description = "A high-performance, headless GIS engine built in Rust. Serve WMS and WFS from GeoPackage using YAML configuration."
+license = "Apache-2.0"
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "0.9"
+serde_json = "1"
+rusqlite = { version = "0.31", features = ["bundled"] }
+image = "0.24"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+clap = { version = "4", features = ["derive"] }
+thiserror = "1"
+tower-http = { version = "0.5", features = ["cors"] }
+
+[dev-dependencies]
+tempfile = "3"
+axum-test = "14"
