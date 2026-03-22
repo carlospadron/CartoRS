@@ -56,15 +56,18 @@ impl DataSource for GeoPackageSource {
         // Get column names for the table (excluding geometry column)
         let column_names = get_column_names(&conn, &layer.table, &layer.geometry_column)?;
 
-        // Build query - LIMIT is safe to interpolate directly since max_features is a usize
+        // Build query with properly quoted identifiers for defense-in-depth.
+        // Table/column names come from the operator-controlled YAML config, but
+        // quoting them prevents issues with reserved words and special characters.
         let limit_clause = max_features
             .map(|n| format!(" LIMIT {}", n))
             .unwrap_or_default();
+        let quoted_cols: Vec<String> = column_names.iter().map(|c| quote_ident(c)).collect();
         let query = format!(
             "SELECT {}, {} FROM {}{}",
-            column_names.join(", "),
-            layer.geometry_column,
-            layer.table,
+            quoted_cols.join(", "),
+            quote_ident(&layer.geometry_column),
+            quote_ident(&layer.table),
             limit_clause
         );
 
@@ -136,7 +139,7 @@ fn get_column_names(
     geometry_column: &str,
 ) -> Result<Vec<String>, DatasourceError> {
     let mut stmt = conn
-        .prepare(&format!("PRAGMA table_info({})", table))
+        .prepare(&format!("PRAGMA table_info({})", quote_ident(table)))
         .map_err(|e| DatasourceError::DatabaseError(e.to_string()))?;
 
     let names: Vec<String> = stmt
@@ -150,6 +153,11 @@ fn get_column_names(
         .collect();
 
     Ok(names)
+}
+
+/// Quote a SQL identifier by wrapping in double quotes and escaping embedded quotes.
+fn quote_ident(ident: &str) -> String {
+    format!("\"{}\"", ident.replace('"', "\"\""))
 }
 
 #[cfg(test)]

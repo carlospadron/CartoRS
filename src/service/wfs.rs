@@ -7,6 +7,9 @@ use crate::error::AppError;
 use crate::server::AppState;
 use crate::xml::xml_escape;
 
+/// Default maximum number of features returned when no COUNT is specified.
+const DEFAULT_MAX_FEATURES: usize = 10000;
+
 /// Handle WFS requests (dispatches based on REQUEST parameter).
 pub async fn handle_wfs(
     State(state): State<AppState>,
@@ -109,7 +112,8 @@ async fn get_feature(
 
     let max_features = get_param("COUNT")
         .or_else(|| get_param("MAXFEATURES"))
-        .and_then(|v| v.parse::<usize>().ok());
+        .and_then(|v| v.parse::<usize>().ok())
+        .unwrap_or(DEFAULT_MAX_FEATURES);
 
     // Parse optional BBOX
     let bbox = get_param("BBOX").and_then(|bbox_str| {
@@ -147,7 +151,7 @@ async fn get_feature(
             })?;
 
         let features = datasource
-            .get_features(layer_config, bbox, max_features)
+            .get_features(layer_config, bbox, Some(max_features))
             .map_err(|e| AppError::DatasourceError(e.to_string()))?;
 
         all_features.extend(features);
