@@ -56,7 +56,7 @@ impl DataSource for GeoPackageSource {
         // Get column names for the table (excluding geometry column)
         let column_names = get_column_names(&conn, &layer.table, &layer.geometry_column)?;
 
-        // Build query
+        // Build query - LIMIT is safe to interpolate directly since max_features is a usize
         let limit_clause = max_features
             .map(|n| format!(" LIMIT {}", n))
             .unwrap_or_default();

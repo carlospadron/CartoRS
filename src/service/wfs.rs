@@ -5,6 +5,7 @@ use std::collections::HashMap;
 
 use crate::error::AppError;
 use crate::server::AppState;
+use crate::xml::xml_escape;
 
 /// Handle WFS requests (dispatches based on REQUEST parameter).
 pub async fn handle_wfs(
@@ -167,16 +168,10 @@ async fn get_feature(
         .into_response())
 }
 
-fn xml_escape(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
-}
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::xml::xml_escape;
 
     #[test]
     fn test_xml_escape() {

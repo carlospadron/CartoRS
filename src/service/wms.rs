@@ -6,6 +6,10 @@ use std::collections::HashMap;
 use crate::error::AppError;
 use crate::rendering::render_map;
 use crate::server::AppState;
+use crate::xml::xml_escape;
+
+/// Maximum allowed image dimension (width or height) for GetMap requests.
+const MAX_IMAGE_DIMENSION: u32 = 4096;
 
 /// Handle WMS requests (dispatches based on REQUEST parameter).
 pub async fn handle_wms(
@@ -124,10 +128,10 @@ async fn get_map(
     let bbox_str = get_param("BBOX")?;
 
     // Validate dimensions
-    if width == 0 || height == 0 || width > 4096 || height > 4096 {
+    if width == 0 || height == 0 || width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION {
         return Err(AppError::InvalidParameter(
             "WIDTH/HEIGHT".to_string(),
-            "must be between 1 and 4096".to_string(),
+            format!("must be between 1 and {}", MAX_IMAGE_DIMENSION),
         ));
     }
 
@@ -191,16 +195,10 @@ async fn get_map(
         .into_response())
 }
 
-fn xml_escape(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
-}
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::xml::xml_escape;
 
     #[test]
     fn test_xml_escape() {

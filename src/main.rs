@@ -4,6 +4,7 @@ mod error;
 mod rendering;
 mod server;
 mod service;
+mod xml;
 
 use clap::Parser;
 use std::path::PathBuf;

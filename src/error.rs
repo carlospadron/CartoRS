@@ -1,6 +1,8 @@
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 
+use crate::xml::xml_escape;
+
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
     #[error("Service not enabled: {0}")]
@@ -51,12 +53,4 @@ impl IntoResponse for AppError {
         )
             .into_response()
     }
-}
-
-fn xml_escape(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
-        .replace('\'', "&apos;")
 }

@@ -2,7 +2,7 @@
 name = "cartors"
 version = "0.1.0"
 edition = "2021"
-description = "A high-performance, headless GIS engine built in Rust. Serve WMS and WFS from PostGIS and GeoPackage using YAML configuration."
+description = "A high-performance, headless GIS engine built in Rust. Serve WMS and WFS from GeoPackage using YAML configuration."
 license = "Apache-2.0"
 
 [dependencies]
